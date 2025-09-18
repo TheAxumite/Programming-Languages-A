@@ -1,0 +1,99 @@
+
+fun is_older (d1 : int * int * int, d2 : int * int * int) =
+    if (#1 d1) < (#1 d2) 
+    then true
+    else if  (#2 d1) < (#2 d2) andalso (#1 d1) = (#1 d2) 
+    then true 
+    else if (#3 d1) < (#3 d2) andalso  (#2 d1) = (#2 d2)
+    then true
+    else false
+
+fun number_in_month (da : (int * int * int) list, m : int) =
+    if null da
+    then 0     
+    else if #2 (hd da) = m
+    then 1 + number_in_month(tl da, m)
+    else  number_in_month(tl da, m)
+	     
+fun number_in_months (da : (int * int * int) list, m : int list) =
+    if null m
+    then 0
+    else number_in_month (da, hd m) + number_in_months (da, tl m)
+						    
+fun dates_in_month (da: (int * int * int) list, m : int) =
+    if null da
+    then []
+    else if number_in_month([hd da], m) > 0
+    then hd da :: dates_in_month(tl da, m)
+    else dates_in_month(tl da, m)
+			
+fun dates_in_months (da: (int * int * int) list, m : int list) =
+    if null m
+    then []
+    else hd (dates_in_month(da, hd m)) :: dates_in_months(da, tl m)
+						     
+fun get_nth (los : string list, n : int) =
+    if n = 1
+    then hd los
+    else get_nth(tl los, n - 1)
+
+fun get_nth_num (lon : int list, n : int) =
+    if n = 1
+    then hd lon
+    else get_nth_num(tl lon, n - 1)
+
+fun date_to_string (da : int * int * int) =
+    let
+	val month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    in
+	get_nth (month, #2 da) ^ " " ^ Int.toString(#3 da) ^ ", " ^ Int.toString(#1 da)
+    end
+
+fun number_before_reaching_sum (sum : int, n : int list) =
+     let
+	 fun add (cursum : int, preindex : int) =
+	     if cursum < sum
+ 	     then add(cursum + get_nth_num(n, preindex + 1), 1 + preindex)
+	     else preindex - 1
+     in
+	 add (hd n,1)
+     end
+
+fun what_month(day : int) =
+    let
+	val month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    in
+	number_before_reaching_sum(day, month) 	+ 1
+    end
+
+fun month_range(day1 : int, day2 : int) =
+    let
+	fun add_to_list (count) =
+	    if count > day2
+	    then []
+	    else what_month count :: add_to_list(count + 1)
+    in
+	add_to_list(day1)
+    end
+
+				    
+
+fun oldest (lom : (int * int * int) list) =
+    if null lom
+    then NONE
+    else let
+    	 fun oldest_one(lom) =
+	     if null (tl lom)
+	     then hd lom
+	     else if is_older(hd lom, hd (tl lom))
+	     then oldest_one(hd lom :: tl (tl lom))
+	     else oldest_one(tl lom)
+	in
+	    SOME (oldest_one(lom))
+	end
+	     
+	     
+				    
+				    
+				  
+

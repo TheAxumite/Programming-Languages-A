@@ -1,0 +1,4 @@
+(* Section 2: More Nested Patterns *)
+
+fun nondecreasing xs = (* int list -> bool *)
+case xs of
